@@ -46,31 +46,29 @@ void remove_entry(node_t **head, node_t *entry)
     free(entry);
 }
 
-node_t *swap_pair(node_t *head)
-{                                                                                                                 
-    for (node_t **node = &head; *node && (*node)->next; node =& (*node)->next->next /*BB1*/ ) {
-        node_t *tmp = *node;
-        *node = (*node)->next; //BB2
-        tmp->next = (*node)->next; 
-        (*node)->next = tmp;
+void *swap_pair(node_t **head)
+{                                                                                                             
+    for (node_t **indirect = head; *indirect&&(*indirect)->next ; indirect = &(*indirect)->next->next) {
+        node_t *tmp =*indirect;
+        *indirect = (*indirect)->next;
+        (*tmp).next= (*indirect)->next;
+        (*indirect)->next=tmp;
     }
-    return head;
-   
 }
 
 
 
-node_t *reverse(node_t *head)
+void reverse(node_t **head)
 {   
+    node_t **indirect = head;
     node_t *cursor = NULL;
-    while (head) {
-        node_t *next = head->next;
-        
-       head->next = cursor; //CCC
-        cursor = head;     //CCC
-        head = next;
+    while (*indirect) {
+        node_t *next = (*indirect)->next;       
+       (*indirect)->next= cursor; 
+        cursor = *indirect;     
+        *indirect = next;
     }
-    return cursor;
+    *head=&(*cursor);
 }
 
 void print_list(node_t *head)
@@ -108,10 +106,10 @@ int main(int argc, char const *argv[])
      * See https://leetcode.com/problems/swap-nodes-in-pairs/
      */
  
-    head = swap_pair(head);
+    swap_pair(&head);
     print_list(head);
 
-    head = reverse(head);
+    reverse(&head);
     print_list(head);
     return 0;
 }
